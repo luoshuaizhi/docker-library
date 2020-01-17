@@ -1,0 +1,18 @@
+---
+repository_pkgs:
+  - name: base
+    description: CentOS-$releasever - Base
+    file: CentOS-Base
+    baseurl: "{{ yum_repository }}/$releasever/os/$basearch/"
+    enabled: yes
+  - name: updates
+    description: CentOS-$releasever - Updates
+    file: CentOS-Base
+    baseurl: "{{ yum_repository }}/$releasever/updates/$basearch/"
+    enabled: yes
+  - name: extras
+    description: CentOS-$releasever - Extras
+    file: CentOS-Base
+    baseurl: "{{ yum_repository }}/$releasever/extras/$basearch/"
+    enabled: yes
+

@@ -1,0 +1,34 @@
+---
+- name: Set fact IP, fqdn, hostname
+  set_fact: 
+    ip: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+
+- name: /etc/hosts | populate inventory into hosts file
+  blockinfile:
+    path: /etc/hosts
+    block: |-
+      {% for item in (groups['all']|default([]))|unique -%}
+      {%- if ('ansible_hostname' in hostvars[item] and ('access_ip' in hostvars[item] or 'ip' in hostvars[item] )) %}
+      {{ hostvars[item]['access_ip'] | default(hostvars[item]['ip']) }}
+      {%- if ('localhost' != hostvars[item]['ansible_hostname']) %} {{ hostvars[item]['ansible_fqdn'] }} {{ hostvars[item]['ansible_hostname'] }} {% else %} {{ inventory_hostname }} {{ inventory_hostname.split('.')|first }} {% endif %}
+      {% endif %}
+      {% endfor %}
+    state: present
+    create: yes
+    backup: yes
+    unsafe_writes: yes
+    marker: "# Ansible inventory hosts {mark}"
+
+- name: Fetch /etc/os-release
+  raw: cat /etc/os-release
+  register: os_release
+  changed_when: false
+  # This command should always run, even in check mode
+  check_mode: false
+  environment: {}
+
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family|lower }}.yml"
+
+- include_tasks: bootstrap-centos.yml
+  when: '"CentOS" in os_release.stdout or "Red Hat Enterprise Linux" in os_release.stdout'

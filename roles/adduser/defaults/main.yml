@@ -1,0 +1,53 @@
+---
+addusers:
+  etcd:
+    name: etcd
+    comment: "Etcd user"
+    createhome: yes
+    home: "{{ etcd_data_dir }}"
+    system: yes
+    shell: /bin/nologin
+  kube:
+    name: kube
+    comment: "Kubernetes user"
+    shell: /sbin/nologin
+    system: yes
+    group: "{{ kube_cert_group }}"
+    createhome: no
+  zookeeper:
+    name: zookeeper
+    comment: "Zookeeper user"
+    shell: /sbin/nologin
+    system: yes
+    group: "{{ zookeeper_group }}"
+    createhome: yes
+  kafka:
+    name: kafka
+    comment: "Kafka user"
+    shell: /sbin/nologin
+    system: yes
+    group: "{{ kafka_group }}"
+    createhome: yes
+  elasticsearch:
+    name: elasticsearch
+    comment: "ElasticSearch user"
+    shell: /sbin/nologin
+    system: yes
+    group: "{{ elasticsearch_group }}"
+    createhome: yes
+  orientdb:
+    name: orientdb
+    comment: "Orientdb user"
+    shell: /sbin/nologin
+    system: yes
+    group: "{{ orientdb_group }}"
+    createhome: yes
+    password: "{{ orientdb_user_password }}"
+
+adduser:
+  name: "{{ user.name }}"
+  group: "{{ user.name|default(None) }}"
+  comment: "{{ user.comment|default(None) }}"
+  shell: "{{ user.shell|default(None) }}"
+  system: "{{ user.system|default(None) }}"
+  createhome: "{{ user.createhome|default(None) }}"

@@ -1,0 +1,57 @@
+---
+# CentOS ships with python installed
+- name: Bootstrap-centos | Restart hostname network
+  service:
+    name: network
+    state: restarted
+    enabled: yes
+
+- name: Bootstrap-centos | Add proxy to /etc/yum.conf if http_proxy is defined
+  lineinfile:
+    path: "/etc/yum.conf"
+    line: "proxy={{ http_proxy }}"
+    create: true
+    state: present
+  become: true
+  when:
+    - http_proxy is defined
+
+- name: Bootstrap-centos | Remove repository from a CentOS-*.repo file
+  yum_repository:
+    name: "{{ item.name }}"
+    file: "{{ item.file }}"
+    state: absent
+  with_items:
+    - { name: 'base', file: 'CentOS-Base' }
+    - { name: 'updates', file: 'CentOS-Base' }
+    - { name: 'extras', file: 'CentOS-Base' }
+  notify: yum-clean-metadata
+
+- name: Bootstrap-centos | Add repository
+  yum_repository:
+    name: "{{ item.name }}"
+    file: "{{ item.file }}"
+    description: "{{ item.description }}"
+    baseurl: "{{ item.baseurl }}"
+    gpgcheck: no
+    enabled: "{{ item.enabled }}"
+  with_items: "{{ repository_pkgs }}"
+  notify: yum-clean-metadata
+
+# libselinux-python is required on SELinux enabled hosts
+# See https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#managed-node-requirements
+- name: Bootstrap-centos | Install libselinux-python
+  yum:
+    name: libselinux-python
+    state: present
+
+- name: Bootstrap-centos | Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: "{{ selinux }}"
+
+- name: Bootstrap-centos | Configure firewalld status
+  service:
+    name: firewalld
+    state: "{{ firewalld_state }}"
+    enabled: "{{ firewalld_enabled }}"

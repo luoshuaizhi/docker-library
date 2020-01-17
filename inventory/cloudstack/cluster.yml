@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: no
+  tasks:
+    - name: "Check ansible version >=2.9.2"
+      assert:
+        msg: "Ansible must be v2.9.2 or higher"
+        that:
+          - ansible_version.string is version("2.9.2", ">=")
+      tags:
+        - check
+  vars:
+    ansible_connection: local
+
+- hosts: all
+  any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
+  vars:
+    yum_repository: http://10.4.5.93/public/mirror.centos.org/centos
+    firewalld: "on"
+  roles:
+    - { role: bootstrap-os }
+    - { role: ntp, ntp_restrict: 11.0.0.0 }

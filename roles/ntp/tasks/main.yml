@@ -1,0 +1,60 @@
+---
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family|lower }}.yml"
+
+- name: Ensure NTP-related packages are installed.
+  yum:
+    name: ntp
+    state: present
+
+- name: Set timezone
+  timezone:
+    name: "{{ ntp_timezone }}"
+
+- name: Ensure NTP is running and enabled as configured.
+  service:
+    name: "{{ ntp_daemon }}"
+    state: started
+    enabled: true
+  when: ntp_enabled | bool
+
+- name: Ensure NTP is stopped and disabled as configured.
+  service:
+    name: "{{ ntp_daemon }}"
+    state: stopped
+    enabled: false
+  when: not (ntp_enabled | bool)
+
+- name: Generate ntp.conf file(1/3)
+  lineinfile:
+    dest: /etc/ntp.conf
+    regexp: '^server '
+    state: absent
+  when: ntp_enabled | bool
+  notify: restart ntp
+
+- name: Generate ntp.conf file(2/3)
+  blockinfile:
+    path: /etc/ntp.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      restrict {{ ntp_restrict }} mask 255.0.0.0 nomodify notrap
+      server 127.127.1.0
+      fudge 127.127.1.0 stratum 10
+  when:
+    - ntp_enabled | bool
+    - ntp_master == inventory_hostname
+  notify: restart ntp
+  delegate_to: "{{ groups['all'] | first }}"
+  run_once: true
+
+- name: Generate ntp.conf file(3/3)
+  blockinfile:
+    path: /etc/ntp.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      server {{ groups['all'] | first }}
+  when:
+    - ntp_enabled | bool
+    - ntp_master != inventory_hostname
+  notify: restart ntp
