@@ -17,7 +17,7 @@ SUPPORTED_OS = {
 }
 
 # Defaults for config options defined in CONFIG
-$num_instances = 1
+$num_instances = 2
 $instance_name_prefix = "k8s"
 $vm_gui = false
 $vm_memory = 4096
@@ -29,7 +29,7 @@ $os = "centos"
 $network_plugin = "flannel"
 # Setting multi_networking to true will install Multus: https://github.com/intel/multus-cni
 $multi_networking = false
-$override_disk_size = false
+$override_disk_size = true
 $disk_size = "100GB"
 
 $box = SUPPORTED_OS[$os][:box]
