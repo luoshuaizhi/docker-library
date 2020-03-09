@@ -59,7 +59,7 @@ RUN curl -fSL "https://translatewiki.net/mleb/MediaWikiLanguageExtensionBundle-$
 	&& rm MediaWikiLanguageExtensionBundle.tar.bz2 \
 	&& chown -R apache:apache extensions skins cache images
 	
-ADD LocalSettings.php LocalSettings.php
+# ADD LocalSettings.php LocalSettings.php
 RUN echo "ServerName 0.0.0.0:80" >> /etc/httpd/conf/httpd.conf
 
 EXPOSE 80
