@@ -1,7 +1,0 @@
----
-ntp_enabled: true
-ntp_timezone: Asia/Shanghai
-
-ntp_master: "{{ groups['all'] | first }}"
-
-ntp_restrict: 10.0.0.0
