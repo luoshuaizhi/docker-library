@@ -11,6 +11,7 @@ function addProperty() {
   local entry="<property><name>$name</name><value>${value}</value></property>"
   local escapedEntry=$(echo $entry | sed 's/\//\\\//g')
   sed -i "/<\/configuration>/ s/.*/${escapedEntry}\n&/" $path
+  echo "Configuring $path $name=$value"
 }
 
 function configure() {
@@ -35,11 +36,11 @@ function configureHostResolver() {
     sed -i "/hosts:/ s/.*/hosts: $*/" /etc/nsswitch.conf
 }
 
-configure /etc/hadoop/core-site.xml core CORE_CONF
-configure /etc/hadoop/hdfs-site.xml hdfs HDFS_CONF
-configure /etc/hadoop/yarn-site.xml yarn YARN_CONF
-configure /etc/hadoop/httpfs-site.xml httpfs HTTPFS_CONF
-configure /etc/hadoop/kms-site.xml kms KMS_CONF
+# configure /etc/hadoop/core-site.xml core CORE_CONF
+# configure /etc/hadoop/hdfs-site.xml hdfs HDFS_CONF
+# configure /etc/hadoop/yarn-site.xml yarn YARN_CONF
+# configure /etc/hadoop/httpfs-site.xml httpfs HTTPFS_CONF
+# configure /etc/hadoop/kms-site.xml kms KMS_CONF
 
 if [ "$MULTIHOMED_NETWORK" = "1" ]; then
     echo "Configuring for multihomed network"
@@ -63,6 +64,8 @@ if [ "$MULTIHOMED_NETWORK" = "1" ]; then
 fi
 
 if [ -n "$GANGLIA_HOST" ]; then
+    echo "Configuring for ganglia host"
+
     mv /etc/hadoop/hadoop-metrics.properties /etc/hadoop/hadoop-metrics.properties.orig
     mv /etc/hadoop/hadoop-metrics2.properties /etc/hadoop/hadoop-metrics2.properties.orig
 
@@ -82,6 +85,7 @@ if [ -n "$GANGLIA_HOST" ]; then
     done > /etc/hadoop/hadoop-metrics2.properties
 fi
 
+echo "Configuring for host resolver"
 case $HOST_RESOLVER in
     "")
         echo "No host resolver specified. Using distro default. (Specify HOST_RESOLVER to change)"
@@ -114,6 +118,8 @@ esac
 
 
 if [ -n "$HADOOP_CUSTOM_CONF_DIR" ]; then
+    echo "Configuring for hadoop custom configuration"
+
     if [ -d "$HADOOP_CUSTOM_CONF_DIR" ]; then
         for f in `ls $HADOOP_CUSTOM_CONF_DIR/`; do
             echo "Applying custom Hadoop configuration file: $f"
