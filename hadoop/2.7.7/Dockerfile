@@ -1,6 +1,6 @@
 FROM centos:7.6.1810
 
-RUN yum install -y net-tools curl  java-1.8.0-openjdk-headless \
+RUN yum install -y net-tools curl which java-1.8.0-openjdk-headless \
     && yum clean all -y \
     && rm -rf /var/cache/yum/*
     
