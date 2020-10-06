@@ -14,21 +14,6 @@ RUN yum install -y impala impala-server impala-shell impala-catalog impala-state
     && yum clean all -y \
     && rm -rf /var/cache/yum/*
 
-
-#ENV HIVE_URL https://archive.cloudera.com/cdh5/cdh/5/hive-$HIVE_VERSION.tar.gz
-#RUN curl -fSL "$HIVE_URL" -o /tmp/hive.tar.gz \
-#    # && curl -fSL "HIVE_URL.asc" -o /tmp/hive.tar.gz.asc \
-#    # && gpg --verify /tmp/hive.tar.gz.asc \
-#    && tar -xvf /tmp/hive.tar.gz -C /opt/ \
-#    && rm /tmp/hive.tar.gz* \
-#    && mv /opt/hive-$HIVE_VERSION /opt/hive \
-#    && ln -s /opt/hive/conf /etc/hive \
-#    && mkdir /opt/hive/logs
-#
-#ADD mysql-connector-java-5.1.49.jar /opt/hive/lib/
-#
-#ENV HIVE_PREFIX=/opt/hive
-#ENV HIVE_CONF_DIR=/etc/hive
+ADD mysql-connector-java-5.1.49.jar /var/lib/impala/
 
 ENV USER=root
-ENV PATH $HIVE_PREFIX/bin/:$PATH
