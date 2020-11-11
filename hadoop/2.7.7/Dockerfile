@@ -15,7 +15,7 @@ RUN curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz \
     && rm /tmp/hadoop.tar.gz* \
     && mv /opt/hadoop-$HADOOP_VERSION /opt/hadoop \
     && ln -s /opt/hadoop/etc/hadoop /etc/hadoop \
-    && cp /etc/hadoop/mapred-site.xml.template /etc/hadoop/mapred-site.xml \
+    # && cp /etc/hadoop/mapred-site.xml.template /etc/hadoop/mapred-site.xml \
     && mkdir /opt/hadoop/logs \
     && mkdir /hadoop-data \
     && rm -Rf /opt/hadoop/share/doc/hadoop

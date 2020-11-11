@@ -6,8 +6,8 @@ RUN yum install -y net-tools curl which java-1.8.0-openjdk-headless \
     
 ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/
 
-ENV HADOOP_VERSION 2.6.0-cdh5.15.1
-ENV HADOOP_URL https://archive.cloudera.com/cdh5/cdh/5/hadoop-$HADOOP_VERSION.tar.gz
+ENV HADOOP_VERSION 3.3.0
+ENV HADOOP_URL https://downloads.apache.org/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 RUN curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz \
     # && curl -fSL "$HADOOP_URL.asc" -o /tmp/hadoop.tar.gz.asc \
     # && gpg --verify /tmp/hadoop.tar.gz.asc \
@@ -26,3 +26,8 @@ ENV MULTIHOMED_NETWORK=1
 
 ENV USER=root
 ENV PATH $HADOOP_PREFIX/bin/:$PATH
+
+# ADD entrypoint.sh /entrypoint.sh
+# RUN chmod a+x /entrypoint.sh
+
+# ENTRYPOINT ["/entrypoint.sh"]
