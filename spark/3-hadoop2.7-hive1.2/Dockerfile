@@ -10,7 +10,6 @@ ENV SPARK_VERSION 3.0.1
 ENV SPARK_URL https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-hadoop2.7-hive1.2.tgz
 RUN curl -fSL "$SPARK_URL" -o /tmp/spark.tgz \
     && tar -xvf /tmp/spark.tgz -C /opt/ \
-    && rm /tmp/spark.tar.gz* \
     && mv /opt/spark-$SPARK_VERSION-bin-hadoop2.7-hive1.2 /opt/spark \
     && ln -s /opt/spark/conf /etc/spark
 
