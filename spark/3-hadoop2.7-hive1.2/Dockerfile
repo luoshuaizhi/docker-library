@@ -1,4 +1,4 @@
-FROM centos:7.6.1810
+FROM dailynuts/hadoop:2.6.0-cdh5.15.1
 
 RUN yum install -y net-tools curl which java-1.8.0-openjdk-headless \
     && yum clean all -y \
