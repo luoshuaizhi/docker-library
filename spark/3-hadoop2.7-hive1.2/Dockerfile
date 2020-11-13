@@ -3,7 +3,7 @@ FROM dailynuts/hadoop:2.6.0-cdh5.15.1
 RUN yum install -y net-tools curl which java-1.8.0-openjdk-headless \
     && yum clean all -y \
     && rm -rf /var/cache/yum/*
-    
+
 ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/
 
 ENV SPARK_VERSION 3.0.1
