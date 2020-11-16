@@ -13,6 +13,11 @@ RUN curl -fSL "$ZEPPELIN_URL" -o /tmp/zeppelin.tgz \
     && rm /tmp/zeppelin.tgz \
     && mv /opt/zeppelin-$ZEPPELIN_VERSION-preview2-bin-all /opt/zeppelin
 
+ENV ANACONDA_URL https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-5.3.0-Linux-x86_64.sh
+#ENV ANACONDA_URL http://10.10.152.1/pub/Anaconda3-5.3.0-Linux-x86_64.sh
+RUN curl -fSL "$ANACONDA_URL" -o /tmp/anaconda.sh \
+    && bash /tmp/anaconda.sh -b -p /opt/anaconda3
+
 ENV ZEPPELIN_PREFIX=/opt/zeppelin
 
 ENV USER=root
