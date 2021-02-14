@@ -4,6 +4,11 @@ RUN yum install -y net-tools curl which java-1.8.0-openjdk-headless \
     && yum clean all -y \
     && rm -rf /var/cache/yum/*
 
+RUN groupadd hadoop
+RUN useradd -g hadoop hdfs
+RUN useradd -g hadoop yarn
+RUN useradd -g hadoop mapred
+
 ENV HADOOP_VERSION 3.3.0
 ENV HADOOP_URL https://downloads.apache.org/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 RUN curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz \
@@ -13,9 +18,8 @@ RUN curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz \
     && rm /tmp/hadoop.tar.gz* \
     && mv /usr/local/hadoop-$HADOOP_VERSION /usr/local/hadoop \
     && ln -s /usr/local/hadoop/etc/hadoop /etc/hadoop \
-    # && cp /etc/hadoop/mapred-site.xml.template /etc/hadoop/mapred-site.xml \
-    # && mkdir /opt/hadoop/logs \
-    # && mkdir /hadoop-data \
+    && chown -R hdfs:hadoop /usr/local/hadoop \
+    && chmod -R 775 /usr/local/hadoop \
     && rm -Rf /usr/local/hadoop/share/doc/hadoop
 
 ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0-openjdk/
@@ -29,17 +33,8 @@ WORKDIR $HADOOP_PREFIX
 #ENV USER=root
 ENV PATH $HADOOP_PREFIX/bin/:$PATH
 
-RUN groupadd hadoop
-RUN useradd -g hadoop hdfs
-RUN useradd -g hadoop yarn
-RUN useradd -g hadoop mapred
-
-RUN chown -R hdfs:hadoop $HADOOP_PREFIX
-RUN chmod -R 775 $HADOOP_PREFIX
-
 # ADD entrypoint.sh /entrypoint.sh
 # RUN chmod a+x /entrypoint.sh
-
 # ENTRYPOINT ["/entrypoint.sh"]
 
 #ENV USER hdfs
