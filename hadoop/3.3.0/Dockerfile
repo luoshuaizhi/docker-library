@@ -4,6 +4,8 @@ RUN yum install -y net-tools curl which java-1.8.0-openjdk-headless \
     && yum clean all -y \
     && rm -rf /var/cache/yum/*
 
+ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0-openjdk/
+
 RUN groupadd hadoop
 RUN useradd -g hadoop hdfs
 RUN useradd -g hadoop yarn
@@ -21,8 +23,6 @@ RUN curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz \
     && chown -R hdfs:hadoop /usr/local/hadoop \
     && chmod -R 775 /usr/local/hadoop \
     && rm -Rf /usr/local/hadoop/share/doc/hadoop
-
-ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0-openjdk/
 
 ENV HADOOP_PREFIX /usr/local/hadoop
 ENV HADOOP_CONF_DIR /etc/hadoop
