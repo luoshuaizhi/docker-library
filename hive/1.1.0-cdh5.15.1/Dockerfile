@@ -1,26 +1,33 @@
-FROM dailynuts/hadoop:2.6.0-cdh5.15.1
+FROM centos:7.6.1810
 
-RUN yum install -y net-tools curl which java-1.8.0-openjdk-headless \
+RUN yum install -y net-tools curl which java-1.8.0-openjdk-headless krb5-server krb5-workstation krb5-libs \
     && yum clean all -y \
-    && rm -rf /var/cache/yum/*
-    
-ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/
+    && rm -rf /var/cache/yum/* \
+    && chmod -R 777 /var/kerberos \
+    && chmod -R 777 /etc
 
-ENV HIVE_VERSION 1.1.0-cdh5.15.1
-ENV HIVE_URL https://archive.cloudera.com/cdh5/cdh/5/hive-$HIVE_VERSION.tar.gz
-RUN curl -fSL "$HIVE_URL" -o /tmp/hive.tar.gz \
-    # && curl -fSL "HIVE_URL.asc" -o /tmp/hive.tar.gz.asc \
-    # && gpg --verify /tmp/hive.tar.gz.asc \
-    && tar -xvf /tmp/hive.tar.gz -C /opt/ \
-    && rm /tmp/hive.tar.gz* \
-    && mv /opt/hive-$HIVE_VERSION /opt/hive \
-    && ln -s /opt/hive/conf /etc/hive \
-    && mkdir /opt/hive/logs
+ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0-openjdk/
 
-ADD mysql-connector-java-5.1.49.jar /opt/hive/lib/
+RUN groupadd hadoop
+RUN useradd -g hadoop hive
+RUN useradd -g hadoop hdfs
 
-ENV HIVE_PREFIX=/opt/hive
-ENV HIVE_CONF_DIR=/etc/hive
+COPY cdh.repo /etc/yum.repos.d/cdh.repo
 
-ENV USER=root
-ENV PATH $HIVE_PREFIX/bin/:$PATH
+RUN yum install -y hive hive-metastore hive-server2 hive-jdbc hive-hbase mysql-connector-java \
+    && yum clean all -y \
+    && rm -rf /var/cache/yum/* \
+    && chown -R hdfs:hadoop /etc/hadoop \
+    && chown -R hive:hadoop /etc/hive \
+    && chmod -R 775 /etc/hadoop /etc/hive
+
+ENV HADOOP_PREFIX /usr/lib/hadoop
+ENV HADOOP_HOME $HADOOP_PREFIX
+ENV HADOOP_CONF_DIR /etc/hadoop/conf
+
+ENV HIVE_PREFIX /usr/lib/hive
+ENV HIVE_HOME $HIVE_PREFIX
+ENV HIVE_CONF_DIR=/etc/hive/conf
+
+ENV PATH $HADOOP_PREFIX/bin/:$HIVE_PREFIX/bin:$PATH
+WORKDIR $HIVE_PREFIX
